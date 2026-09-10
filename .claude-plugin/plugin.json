@@ -1,0 +1,7 @@
+{
+  "name": "maro-ppt",
+  "description": "핵심 메시지·후킹 제목·슬라이드 구성을 인터뷰로 받아, 받은 항목을 설득 구조로 펼쳐 단일 HTML 발표 덱을 만드는 스킬",
+  "version": "1.0.0",
+  "author": { "name": "maro" },
+  "keywords": ["presentation", "slides", "deck", "korean", "ppt", "lecture"]
+}

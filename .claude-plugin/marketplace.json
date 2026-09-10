@@ -1,0 +1,11 @@
+{
+  "name": "maro-ppt",
+  "owner": { "name": "maro" },
+  "plugins": [
+    {
+      "name": "maro-ppt",
+      "source": "./",
+      "description": "몸값 올리는 PPT 제작 스킬 — 인터뷰로 받아 설득 구조로 펼치는 단일 HTML 발표 덱"
+    }
+  ]
+}
