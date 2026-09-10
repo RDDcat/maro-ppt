@@ -50,7 +50,9 @@
 
 **3. 슬라이드 구성** — 다룰 항목을 순서대로. 거칠어도 됩니다. 위에서 본 대로 펼쳐집니다.
 
-**4. 나머지** — 듣는 사람, 저장 위치. 장수는 묻지 않습니다.
+**4. PPT 스타일** — 등록된 스타일이 둘 이상이면 이름과 인상을 나란히 보여 주고 고르게 합니다.
+
+**5. 나머지** — 듣는 사람, 저장 위치. 장수는 묻지 않습니다.
 
 ---
 
@@ -68,7 +70,13 @@
 
 ---
 
-## 디자인
+## 스타일
+
+**PPT 스타일도 인터뷰에서 고릅니다.** 등록된 스타일이 하나뿐이면 묻지 않고 알려만 줍니다.
+
+현재 등록된 스타일:
+
+### `minimal` — 최소 덱
 
 > **아이보리 종이 바탕 · 각진 흰 카드 · 라임 형광펜 한 획**
 
@@ -82,8 +90,24 @@
 
 파랑·라운드·알약은 슬라이드 안에 **그려 넣은 예시 UI**에만 씁니다. 덱 자신의 구조에는 쓰지 않습니다.
 
-전체 규격은 [`skills/maro-ppt/references/design-spec.md`](skills/maro-ppt/references/design-spec.md) 에 있습니다.
+규격 전문은 [`styles/minimal/design-spec.md`](skills/maro-ppt/styles/minimal/design-spec.md),
 브라우저로 보려면 [`design-spec.html`](design-spec.html) 을 열면 됩니다.
+
+### 스타일 추가하기
+
+`skills/maro-ppt/styles/` 에 **폴더 하나를 추가하면 인터뷰 선택지에 자동으로 뜹니다.**
+
+```
+styles/{이름}/
+├── style.md        ← frontmatter(label·tagline·fit) + 규칙 5절
+└── template.html    ← 공통 요건(외부 요청 0건·인라인 편집·화면 배율)을 만족할 것
+```
+
+**확장 엔진은 스타일과 무관합니다.** 스타일이 바꾸는 것은 *어떻게 보이는가*이지
+*무엇을 몇 장으로 말하는가*가 아닙니다. 스타일마다 다른 것은 **도해 카탈로그** 하나뿐이라,
+확장 엔진이 "순서·인과를 말해야 한다"까지 정하면 그것을 무엇으로 그릴지는 그 스타일의 표가 정합니다.
+
+자세한 것은 [`styles/README.md`](skills/maro-ppt/styles/README.md) 에 있습니다.
 
 ---
 
@@ -109,14 +133,14 @@
 ### 플러그인으로 (권장)
 
 ```
-/plugin marketplace add <이 저장소 URL>
+/plugin marketplace add https://github.com/RDDcat/maro-ppt
 /plugin install maro-ppt@maro-ppt
 ```
 
 ### 스킬만 직접 복사
 
 ```bash
-git clone <이 저장소 URL>
+git clone https://github.com/RDDcat/maro-ppt.git
 cp -R maro-ppt/skills/maro-ppt ~/.claude/skills/
 ```
 
@@ -139,7 +163,7 @@ cp -R maro-ppt/skills/maro-ppt ~/.claude/skills/
 /maro-ppt
 ```
 
-손으로 만들 때는 [`skills/maro-ppt/template.html`](skills/maro-ppt/template.html) 을 복사해
+손으로 만들 때는 [`skills/maro-ppt/styles/minimal/template.html`](skills/maro-ppt/styles/minimal/template.html) 을 복사해
 `{중괄호}` 자리를 채우고, 필요 없는 `<section class="slide">` 은 통째로 지웁니다.
 헤더의 장수는 자동으로 세어집니다.
 
