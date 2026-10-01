@@ -184,20 +184,58 @@ footer{gap:18px}
   .frame img{height:160px}
 }
 
-/* 8. 인라인 편집 ---------------------------------------- */
+@media(max-width:600px){
+  .venn p{position:static;width:auto;transform:none;text-align:left;
+    padding:10px 0;border-top:1px solid var(--line)}
+}
+
+/* 8. 도식 — 박스와 화살표. 좌표는 캔버스 px, 폭에 맞춰 스크립트가 축소한다 */
+.dg-fit{position:relative;width:100%;margin:0 auto}
+.dg{position:absolute;left:0;top:0;transform-origin:0 0}
+.dg-edge{display:none}
+.dg-wire{position:absolute;inset:0;z-index:1;pointer-events:none}
+.dg-wire svg{position:absolute;left:0;top:0;overflow:visible}
+.dg-wire path{fill:none;stroke:var(--ink);stroke-width:2}
+.dg-wire polygon{fill:var(--ink)}
+.dg-wire .muted{stroke:var(--muted)}
+.dg-wire polygon.muted{fill:var(--muted);stroke:none}
+.dg-wire .dg-hit{stroke:transparent;stroke-width:16}
+.dg-label{position:absolute;transform:translate(-50%,-50%);padding:3px 8px;background:var(--paper);
+  font-size:13px;font-weight:800;white-space:nowrap}
+.dg-node{position:absolute;z-index:2;display:flex;flex-direction:column;justify-content:center;gap:5px;
+  padding:14px 16px;background:#fff;border:1px solid var(--line)}
+.dg-node b{font-size:17px;letter-spacing:-.02em}
+.dg-node span{font-size:13px;line-height:1.5;color:var(--muted)}
+.dg-node.ink{background:var(--ink);border-color:var(--ink);color:#fff}
+.dg-node.ink span{color:var(--on-ink)}
+.dg-node.lime{background:var(--lime);border-color:var(--lime)}
+.dg-node.lime span{color:#3d4a43}
+.dg-node.zone{z-index:0;justify-content:flex-start;background:var(--soft-2);border:1px dashed var(--line)}
+.dg-node.zone b{font-size:12px;letter-spacing:.1em;color:var(--muted)}
+.dg-node.ghost{background:none;border:0;padding:0}
+</style>
+<style data-editor>
+/* 9. 인라인 편집 — [편집 기능 삭제] 로 통째로 빠진다 ---- */
 .tools{display:flex;gap:6px}
 .edit-btn{padding:8px 13px;border:1px solid var(--line);border-radius:0;background:#fff;
   color:var(--ink);font:800 11px/1 Arial;letter-spacing:.08em;cursor:pointer}
 .edit-btn.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.edit-btn[hidden],.dg-tools[hidden]{display:none}
+.dg-tools{display:flex;gap:6px;padding-left:6px;border-left:1px solid var(--line)}
 .edit-note{align-self:center;max-width:300px;font:700 11px/1.4 Arial;color:#8a928e}
 .editing [data-edit]{cursor:text}
 .editing [data-edit]:hover{box-shadow:inset 0 0 0 1px var(--lime)}
 .editing [data-edit]:focus{outline:2px solid var(--lime);outline-offset:3px;box-shadow:none}
-@media(max-width:600px){
-  .venn p{position:static;width:auto;transform:none;text-align:left;
-    padding:10px 0;border-top:1px solid var(--line)}
-  .tools .edit-btn:not(#edit){display:none}
-}
+/* 도식 편집 — [편집] 이 켜진 채 도식 장에 있을 때만 */
+.dg-on .dg-node{cursor:grab}
+.dg-on .dg-node:hover{outline:1px solid var(--lime)}
+.dg-on .dg-wire .dg-hit,.dg-on .dg-label{pointer-events:auto;cursor:pointer}
+.dg-node.dg-sel{outline:2px solid var(--ink);outline-offset:3px}
+.dg-wire path.on{stroke:var(--green);stroke-width:3.5}
+.dg-grip{position:absolute;right:-7px;bottom:-7px;width:12px;height:12px;
+  background:var(--lime);border:2px solid var(--ink);cursor:nwse-resize}
+.dg-node [contenteditable]{outline:2px solid var(--lime);outline-offset:2px;cursor:text}
+@media(max-width:600px){ .tools .edit-btn:not(#edit),.dg-tools{display:none} }
 </style>
 </head>
 <body>
@@ -379,7 +417,28 @@ footer{gap:18px}
   </div>
 </section>
 
-<!-- 10 마무리 ---------------------------------------------- -->
+<!-- 10 구조 (도식 — [편집] 켜면 박스·화살표를 고친다) ---- -->
+<section class="slide one">
+  <div class="copy">
+    <h2>{대상}의 <span class="accent">연결 구조</span></h2>
+    <p class="body">{무엇이 무엇을 거쳐 어디로 가는지 한 문장.}</p>
+  </div>
+  <div>
+    <div class="dg" data-size="1180x380">
+      <div class="dg-node" id="dg-a" style="left:0px;top:130px;width:230px;height:120px"><b>{출발}</b><span>{한 줄 설명}</span></div>
+      <div class="dg-node" id="dg-b" style="left:470px;top:20px;width:240px;height:120px"><b>{경유 1}</b><span>{한 줄 설명}</span></div>
+      <div class="dg-node" id="dg-c" style="left:470px;top:240px;width:240px;height:120px"><b>{경유 2}</b><span>{한 줄 설명}</span></div>
+      <div class="dg-node ink" id="dg-d" style="left:950px;top:130px;width:230px;height:120px"><b>{도착}</b><span>{한 줄 설명}</span></div>
+      <div class="dg-edge" data-from="dg-a" data-to="dg-b" data-label="{동작}"></div>
+      <div class="dg-edge" data-from="dg-a" data-to="dg-c" data-label="{동작}"></div>
+      <div class="dg-edge" data-from="dg-b" data-to="dg-d"></div>
+      <div class="dg-edge" data-from="dg-c" data-to="dg-d" data-style="dashed" data-tone="muted" data-label="{예외}"></div>
+    </div>
+    <div class="band lime">{이 구조에서 봐야 할 곳 한 줄.}</div>
+  </div>
+</section>
+
+<!-- 11 마무리 ---------------------------------------------- -->
 <section class="slide two dense">
   <div class="copy">
     <h1>오늘의 <span class="accent">정리</span></h1>
@@ -400,10 +459,19 @@ footer{gap:18px}
 
 <footer>
   <div class="progress"><i id="bar"></i></div>
-  <div class="tools">
+  <div class="tools" data-editor>
     <button id="edit" class="edit-btn" title="클릭해서 글자 고치기 (E)">편집</button>
     <button id="save" class="edit-btn" hidden>저장</button>
     <button id="reset" class="edit-btn" hidden>원래대로</button>
+    <span class="dg-tools" id="dg-tools" hidden>
+      <button class="edit-btn" data-dg="add" title="새 박스">박스</button>
+      <button class="edit-btn" data-dg="link" title="고른 박스에서 다음에 누르는 박스로 화살표">연결</button>
+      <button class="edit-btn" data-dg="dup" title="⌘D">복제</button>
+      <button class="edit-btn" data-dg="tone" title="박스: 흰 → 잉크 → 라임 · 화살표: 실선 ↔ 점선">모양</button>
+      <button class="edit-btn" data-dg="bend" title="화살표 곡률: 직선 → 오른쪽 → 왼쪽">휘기</button>
+      <button class="edit-btn" data-dg="del" title="Delete">삭제</button>
+    </span>
+    <button id="final" class="edit-btn" hidden title="편집기를 걷어낸 가벼운 발표용 HTML 로 저장한다">편집 기능 삭제</button>
     <span class="edit-note" id="note"></span>
   </div>
   <span class="hint">← → · SPACE</span>
@@ -429,6 +497,7 @@ function show(x){
   c.textContent=String(i+1).padStart(2,'0');
   b.style.width=((i+1)/s.length*100)+'%';
   p.disabled=i===0; n.disabled=i===s.length-1;
+  document.dispatchEvent(new CustomEvent('deck:slide',{detail:{i,last:i===s.length-1}}));
 }
 p.onclick=()=>show(i-1); n.onclick=()=>show(i+1);
 addEventListener('keydown',e=>{
@@ -459,6 +528,72 @@ addEventListener('keydown',e=>{
 </script>
 
 <script>
+/* 도식 보기 — .dg 캔버스를 폭에 맞춰 줄이고 화살표를 그린다. 편집 기능을 삭제해도 남는다.
+   화살표는 .dg-edge 데이터로만 저장하고, 그림(.dg-wire)은 열 때마다 새로 그린다 */
+(function(){
+  const cvs=[...document.querySelectorAll('.dg')];
+  if(!cvs.length)return;
+  const esc=t=>t.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const size=cv=>{const m=(cv.dataset.size||'').match(/(\d+)\s*[x×]\s*(\d+)/);return m?{w:+m[1],h:+m[2]}:{w:1180,h:380}};
+  function fit(cv){
+    let box=cv.parentElement;
+    if(!box.classList.contains('dg-fit')){
+      box=document.createElement('div');box.className='dg-fit';
+      cv.replaceWith(box);box.appendChild(cv);
+    }
+    const {w,h}=size(cv);
+    box.style.maxWidth=w+'px';
+    cv.style.width=w+'px';cv.style.height=h+'px';
+    const k=box.clientWidth?Math.min(1,box.clientWidth/w):0;
+    if(!k)return;                                   /* 숨은 장은 폭이 0 — 보일 때 다시 맞춘다 */
+    cv.style.transform=k<1?'scale('+k+')':'';
+    box.style.height=h*k+'px';
+  }
+  /* 상자 가장자리에서 목표점 쪽으로 나가는 점 */
+  function rim(n,tx,ty){
+    const cx=n.offsetLeft+n.offsetWidth/2,cy=n.offsetTop+n.offsetHeight/2,dx=tx-cx,dy=ty-cy;
+    if(!dx&&!dy)return{x:cx,y:cy};
+    const t=Math.min(dx?n.offsetWidth/2/Math.abs(dx):1e9,dy?n.offsetHeight/2/Math.abs(dy):1e9);
+    return{x:cx+dx*t,y:cy+dy*t};
+  }
+  function head(p,c,cls){                           /* c → p 방향으로 끝나는 화살촉 */
+    const L=Math.hypot(p.x-c.x,p.y-c.y)||1,ux=(p.x-c.x)/L,uy=(p.y-c.y)/L,bx=p.x-ux*11,by=p.y-uy*11;
+    return '<polygon class="'+cls+'" points="'+p.x+','+p.y+' '+(bx-uy*5.5)+','+(by+ux*5.5)+' '+(bx+uy*5.5)+','+(by-ux*5.5)+'"/>';
+  }
+  function render(cv){
+    const {w,h}=size(cv),sel=window.DG&&DG.selected();
+    let wire=cv.querySelector(':scope>.dg-wire');
+    if(!wire){wire=document.createElement('div');wire.className='dg-wire';cv.prepend(wire)}
+    let svg='',labels='';
+    [...cv.querySelectorAll(':scope>.dg-edge')].forEach((e,k)=>{
+      const a=cv.querySelector('#'+CSS.escape(e.dataset.from||'')),b=cv.querySelector('#'+CSS.escape(e.dataset.to||''));
+      if(!a||!b){console.warn('도식 화살표의 끝 박스가 없다',e.dataset.from,e.dataset.to);return}
+      const ax=a.offsetLeft+a.offsetWidth/2,ay=a.offsetTop+a.offsetHeight/2,
+            bx=b.offsetLeft+b.offsetWidth/2,by=b.offsetTop+b.offsetHeight/2,
+            len=Math.hypot(bx-ax,by-ay)||1,cu=parseFloat(e.dataset.curve)||0,
+            c={x:(ax+bx)/2-(by-ay)/len*cu*len,y:(ay+by)/2+(bx-ax)/len*cu*len},
+            p0=rim(a,c.x,c.y),p1=rim(b,c.x,c.y),
+            cls=(e.dataset.tone==='muted'?'muted':'')+(e===sel?' on':''),
+            d='M'+p0.x+' '+p0.y+' Q'+c.x+' '+c.y+' '+p1.x+' '+p1.y,
+            arrow=e.dataset.arrow||'end';
+      svg+='<path class="'+cls+'" d="'+d+'"'+(e.dataset.style==='dashed'?' stroke-dasharray="7 6"':'')+'/>';
+      if(arrow==='end'||arrow==='both')svg+=head(p1,c,cls);
+      if(arrow==='both')svg+=head(p0,c,cls);
+      svg+='<path class="dg-hit" data-k="'+k+'" d="'+d+'"/>';
+      if(e.dataset.label)labels+='<div class="dg-label" data-k="'+k+'" style="left:'+(p0.x/4+c.x/2+p1.x/4)+'px;top:'+(p0.y/4+c.y/2+p1.y/4)+'px">'+esc(e.dataset.label)+'</div>';
+    });
+    wire.innerHTML='<svg width="'+w+'" height="'+h+'" viewBox="0 0 '+w+' '+h+'" aria-hidden="true">'+svg+'</svg>'+labels;
+  }
+  const shown=()=>cvs.filter(cv=>cv.closest('.slide.active'));
+  function refresh(){cvs.forEach(fit);shown().forEach(render)}
+  window.DGV={fit,render,refresh,size};
+  refresh();
+  addEventListener('resize',refresh);
+  document.addEventListener('deck:slide',refresh);
+})();
+</script>
+
+<script data-editor>
 /* 인라인 편집 — 클릭해서 글자만 고친다 (구조는 건드리지 않는다)
    E(한글 ㄷ) 또는 [편집] 으로 켠다 · [저장] / ⌘S 는 이 HTML 파일을 그대로 덮어쓴다
    파일은 처음 한 번만 고르면 되고, 그 뒤로는 묻지 않고 덮어쓴다 */
@@ -466,7 +601,7 @@ addEventListener('keydown',e=>{
   const SEL='.slide h1,.slide h2,.slide h3,.slide p,.slide small,.slide figcaption,'
            +'.slide .link,.slide .band,.flow span,.flow strong,.steps>div,.pairs>div,'
            +'.breakdown span,.stat,.prompt';
-  const all=[...document.querySelectorAll(SEL)];
+  const all=[...document.querySelectorAll(SEL)].filter(el=>!el.closest('.dg'));   /* 도식 글자는 도식 편집기가 맡는다 */
   const nodes=all.filter(el=>!all.some(o=>o!==el&&o.contains(el)));
   if(!nodes.length)return;
   nodes.forEach((el,i)=>el.dataset.edit=i);
@@ -480,23 +615,58 @@ addEventListener('keydown',e=>{
   const bEdit=document.getElementById('edit'),
         bSave=document.getElementById('save'),
         bReset=document.getElementById('reset'),
+        bFinal=document.getElementById('final'),
         note=document.getElementById('note');
   const FSA=!!window.showSaveFilePicker;
-  let on=false, handle=null, asked=false;
-
-  try{const s=JSON.parse(localStorage.getItem(KEY)||'{}');
-      for(const k in s) if(nodes[k]) nodes[k].innerHTML=s[k];}catch(e){}
+  const LOADED=Date.now();          /* 이 탭이 파일을 읽은 시각 — 이후 파일이 밖에서 바뀌면 덮어쓰기 전에 묻는다 */
+  let on=false, handle=null, asked=false, mine=0, auto=false, timer=0;
 
   function say(t,ms){
     if(!note)return;
     note.textContent=t;
     if(ms)setTimeout(()=>{if(note.textContent===t)note.textContent=''},ms);
   }
+
+  /* 저장 안 한 편집 복구 — 자리 번호만 믿지 않는다.
+     편집마다 "원래 글자(o)"를 같이 적어 두고, 파일의 그 자리가 아직 원래 글자일 때만 되돌려 놓는다.
+     에이전트가 장을 넣거나 글자를 고쳐 자리가 바뀌었으면 원래 글자로 자리를 다시 찾고,
+     그래도 못 찾으면 덮어쓰지 않고 따로 보관한 뒤 알린다 (window.maroLost) */
+  (function restore(){
+    let s;try{s=JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){return}
+    const e=s&&s.v===2?s.e:null,lost=[],used=new Set();
+    if(!e){                                            /* 예전 형식(자리 번호만) — 위치를 확신할 수 없어 붙이지 않는다 */
+      for(const k in s)if(typeof s[k]==='string')lost.push({o:'',v:s[k]});
+    }else for(const k in e){
+      const {o,v}=e[k];let el=nodes[k];
+      if(!el||el.innerHTML!==o||used.has(el)){
+        const c=nodes.filter(n=>n.innerHTML===o&&!used.has(n));
+        el=c.length===1?c[0]:null;
+      }
+      if(el){el.innerHTML=v;used.add(el)}else lost.push({o,v});
+    }
+    if(lost.length){
+      try{localStorage.setItem(KEY+':lost',JSON.stringify(lost))}catch(_){}
+      window.maroLost=lost;
+      const strip=h=>{const d=document.createElement('div');d.innerHTML=h;return d.textContent.trim().slice(0,60)};
+      setTimeout(()=>alert('저장하지 않은 편집 '+lost.length+'개를 다시 붙이지 못했습니다.\n'
+        +'그 사이 파일이 바뀌어(에이전트 수정 등) 원래 자리를 찾을 수 없었습니다. 덮어쓰지 않고 따로 보관했습니다.\n\n'
+        +lost.slice(0,5).map(x=>'· '+strip(x.v)).join('\n')
+        +(lost.length>5?'\n…':'')+'\n\n전체 목록: 개발자 도구 콘솔에서 maroLost'),300);
+    }
+    store();
+  })();
+
   function store(){
-    const d={};
-    nodes.forEach((el,i)=>{if(el.innerHTML!==origin[i])d[i]=el.innerHTML});
-    try{localStorage.setItem(KEY,JSON.stringify(d))}catch(e){}
+    const e={};
+    nodes.forEach((el,i)=>{if(el.innerHTML!==origin[i])e[i]={o:origin[i],v:el.innerHTML}});
+    try{
+      if(Object.keys(e).length)localStorage.setItem(KEY,JSON.stringify({v:2,e}));
+      else localStorage.removeItem(KEY);
+    }catch(_){}
   }
+  const dirty=()=>nodes.some((el,i)=>el.innerHTML!==origin[i])||!!(window.DG&&DG.dirty());
+  /* 저장 안 한 채 닫으면 묻는다 — 에이전트는 브라우저에만 있는 편집을 볼 수 없다 */
+  addEventListener('beforeunload',e=>{if(dirty()){e.preventDefault();e.returnValue=''}});
   function mode(v){
     on=v; document.body.classList.toggle('editing',on);
     nodes.forEach(el=>on?el.setAttribute('contenteditable',PT?'plaintext-only':'true')
@@ -504,6 +674,7 @@ addEventListener('keydown',e=>{
     bEdit.textContent=on?'편집 끝':'편집';
     bEdit.classList.toggle('on',on);
     bSave.hidden=!on; bReset.hidden=!on;
+    document.dispatchEvent(new CustomEvent('deck:edit',{detail:{on}}));
     if(!on){say('',0);return}
     if(!FSA)say('이 브라우저는 덮어쓰기를 못 한다 — 저장은 내려받기로 떨어진다',6000);
     else if(!handle&&!asked)say('저장할 때 파일을 한 번 묻는다. 이 파일을 골라 덮어쓰면 그 뒤로는 안 묻는다',7000);
@@ -517,6 +688,12 @@ addEventListener('keydown',e=>{
     c.querySelectorAll('#save,#reset').forEach(e=>e.setAttribute('hidden',''));
     const e=c.querySelector('#edit'); if(e){e.textContent='편집';e.classList.remove('on')}
     const n=c.querySelector('#note'); if(n)n.textContent='';
+    c.querySelectorAll('.dg-fit').forEach(f=>{const cv=f.querySelector('.dg');   /* 도식: 맞춤 상자·그림 걷기 */
+      if(cv){cv.style.transform='';f.replaceWith(cv)}else f.remove()});
+    c.querySelectorAll('.dg-wire,.dg-grip').forEach(e=>e.remove());
+    c.querySelectorAll('.dg-sel').forEach(e=>e.classList.remove('dg-sel'));
+    c.querySelector('body').classList.remove('dg-on');
+    c.querySelectorAll('#dg-tools,#final').forEach(e=>e.setAttribute('hidden',''));
     return '<!doctype html>\n'+c.outerHTML;
   }
 
@@ -552,36 +729,93 @@ addEventListener('keydown',e=>{
     await keep(handle);
     return handle;
   }
-  async function save(){
+  async function save(silent){
     const text=html();
     try{
-      const h=await target();
+      const first=!handle;
+      const h=silent?handle:await target();
       if(h){
+        const f=await h.getFile();
+        /* 처음 고른 파일이 비어 있으면 원본이 아니라 새 사본이다 — 에이전트는 원본을 고치므로 편집이 안 보이게 된다 */
+        if(first&&!silent&&f.size===0&&!confirm('고른 파일이 비어 있는 새 파일입니다 — 원본이 아닙니다.\n'
+          +'에이전트는 원본("'+FILE+'")을 고치므로, 사본에 저장하면 다음 수정 때 편집이 묻힙니다.\n\n'
+          +'그래도 이 새 파일에 저장할까요? (취소하고 원본을 고르는 것을 권합니다)')){
+          handle=null;asked=false;say('저장을 취소했다 — 원본 파일을 골라 덮어쓰세요',5000);return;
+        }
+        /* 이 탭을 연 뒤 파일이 밖에서 바뀌었으면(에이전트 수정 등) 묻지 않고 덮어쓰지 않는다 */
+        if(f.size&&f.lastModified>Math.max(LOADED,mine)+1500){
+          auto=false;
+          if(silent){say('파일이 밖에서 바뀌어 자동 저장을 멈췄다 — 새로고침하세요 (편집은 남아 있다)',8000);return}
+          if(!confirm('이 탭을 연 뒤 파일이 밖에서 바뀌었습니다 (에이전트 수정 등).\n'
+            +'지금 덮어쓰면 그 변경이 사라집니다.\n\n'
+            +'[취소] 후 새로고침을 권합니다 — 저장 안 한 편집은 브라우저에 남아 있다가 다시 붙습니다.\n'
+            +'그래도 덮어쓸까요?')){say('덮어쓰지 않았다 — 새로고침하세요',5000);return}
+        }
         const w=await h.createWritable(); await w.write(text); await w.close();
+        mine=(await h.getFile()).lastModified;
         nodes.forEach((el,i)=>origin[i]=el.innerHTML);
         try{localStorage.removeItem(KEY)}catch(e){}
-        bSave.textContent='저장됨'; setTimeout(()=>bSave.textContent='저장',1600);
-        say(h.name+' 덮어씀',2500);
+        if(window.DG)DG.saved();
+        auto=true;                                     /* 한 번 저장한 뒤로는 고칠 때마다 원본에 바로 쓴다 */
+        if(!silent){bSave.textContent='저장됨'; setTimeout(()=>bSave.textContent='저장',1600)}
+        say(h.name+(silent?' 자동 저장':' 덮어씀'),silent?1200:2500);
         return;
       }
     }catch(err){
       if(err.name==='AbortError'){say('저장을 취소했다',2000);return}
+      if(silent){auto=false;say('자동 저장 실패 — ⌘S 로 다시 저장하세요 ('+err.name+')',6000);return}
       say('덮어쓰기가 막혀 내려받기로 저장한다 ('+err.name+')',6000);
     }
+    if(silent)return;
     const a=document.createElement('a');
     a.href=URL.createObjectURL(new Blob([text],{type:'text/html'}));
     a.download=FILE; a.click(); URL.revokeObjectURL(a.href);
   }
 
+  /* 편집 기능 삭제 — 마지막 장에서만 보인다. data-editor 가 붙은 것(편집 스크립트·편집 CSS·푸터 도구)을
+     걷어낸 발표용 HTML 을 새 파일로 저장한다. 장 넘기기·확대축소·도식 그림은 남는다 */
+  document.addEventListener('deck:slide',e=>{bFinal.hidden=!e.detail.last});
+  bFinal.hidden=!document.querySelector('.slide:last-of-type.active');
+  async function strip(){
+    if(!confirm('편집 기능을 뺀 발표용 HTML 을 따로 저장합니다.\n'
+      +'확대·축소와 장 넘기기는 그대로 남고, 저장한 파일은 다시 편집할 수 없습니다.\n'
+      +'원본을 덮어쓰려면 저장 창에서 이 파일을 고르세요.'))return;
+    if(on)mode(false);
+    const d=new DOMParser().parseFromString(html(),'text/html');
+    d.querySelectorAll('[data-editor]').forEach(e=>e.remove());
+    const text='<!doctype html>\n'+d.documentElement.outerHTML,
+          name=FILE.replace(/\.html?$/i,'')+'-발표용.html';
+    try{
+      if(FSA){
+        const h=await showSaveFilePicker({id:'maro-ppt-final',suggestedName:name,
+          types:[{description:'HTML 문서',accept:{'text/html':['.html']}}]});
+        const w=await h.createWritable(); await w.write(text); await w.close();
+        say(h.name+' 저장 — 편집 기능 없음, '+Math.round(text.length/1024)+'KB',4000);
+        return;
+      }
+    }catch(err){ if(err.name==='AbortError'){say('취소했다',2000);return} }
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(new Blob([text],{type:'text/html'}));
+    a.download=name; a.click(); URL.revokeObjectURL(a.href);
+  }
+  bFinal.onclick=strip;
   bEdit.onclick=()=>mode(!on);
-  bSave.onclick=save;
+  bSave.onclick=()=>save();
   bReset.onclick=()=>{
     if(!confirm('고친 내용을 모두 되돌립니다.'))return;
     nodes.forEach((el,i)=>el.innerHTML=origin[i]);
-    try{localStorage.removeItem(KEY)}catch(e){}
+    try{localStorage.removeItem(KEY);localStorage.removeItem(KEY+':lost')}catch(e){}
+    if(window.DG)DG.reset();
     say('되돌렸다',2000);
   };
-  document.addEventListener('input',e=>{if(e.target.closest('[data-edit]'))store()});
+  document.addEventListener('input',e=>{if(e.target.closest('[data-edit]'))changed()});
+  /* 고칠 때마다 브라우저에 적어 두고, 이 탭에서 한 번 저장한 뒤로는 1초 뒤 원본에도 바로 쓴다 */
+  function changed(){
+    store();
+    if(!auto||!handle)return;
+    clearTimeout(timer);timer=setTimeout(()=>save(true),1000);
+  }
+  document.addEventListener('deck:changed',changed);  /* 도식 편집기가 보낸다 */
   addEventListener('keydown',e=>{
     if(e.target.isContentEditable){
       if((e.metaKey||e.ctrlKey)&&(e.key==='s'||e.key==='S'||e.key==='ㄴ'||e.code==='KeyS')){e.preventDefault();save()}
@@ -591,6 +825,206 @@ addEventListener('keydown',e=>{
     if((e.metaKey||e.ctrlKey)&&(e.key==='s'||e.key==='S'||e.key==='ㄴ'||e.code==='KeyS')&&on){e.preventDefault();save();return}
     if(e.key==='e'||e.key==='E'||e.key==='ㄷ'||e.key==='ㄸ'||e.code==='KeyE'){e.preventDefault();mode(!on)}
   });
+})();
+</script>
+<script data-editor>
+/* 도식 편집 — [편집] 이 켜진 채 도식 장에 있을 때만 푸터에 도식 도구가 뜬다
+   끌기: 박스 이동(10px 격자) · 모서리 네모: 크기 · 더블클릭: 글자 / 화살표 라벨
+   ⌘Z 는 그 캔버스만 되돌린다(덱 전체를 갈아끼우지 않는다) · 저장은 덱의 ⌘S 하나 */
+(function(){
+  const cvs=[...document.querySelectorAll('.dg')],bar=document.getElementById('dg-tools'),
+        note=document.getElementById('note');
+  if(!cvs.length||!window.DGV){if(bar)bar.remove();return}
+  const KEY='maro-ppt:dg:'+location.pathname,G=10,
+        PT=(()=>{const d=document.createElement('div');d.setAttribute('contenteditable','plaintext-only');
+          return d.contentEditable==='plaintext-only'})();
+  let sel=null,from=null,undo=[],redo=[];
+  const say=(t,ms)=>{if(!note)return;note.textContent=t;if(ms)setTimeout(()=>{if(note.textContent===t)note.textContent=''},ms)};
+  const snap=v=>Math.round(v/G)*G;
+  const edges=cv=>[...cv.querySelectorAll(':scope>.dg-edge')];
+  const nodeOf=el=>el&&el.classList&&el.classList.contains('dg-node');
+  const active=()=>document.body.classList.contains('editing')&&document.querySelector('.slide.active .dg');
+  function shot(cv){                                  /* 저장·되돌리기용 깨끗한 캔버스 내용 */
+    const c=cv.cloneNode(true);
+    c.querySelectorAll('.dg-wire,.dg-grip').forEach(e=>e.remove());
+    c.querySelectorAll('.dg-sel').forEach(e=>e.classList.remove('dg-sel'));
+    c.querySelectorAll('[contenteditable]').forEach(e=>e.removeAttribute('contenteditable'));
+    return c.innerHTML;
+  }
+  let origin=cvs.map(shot);
+  /* 저장 안 한 도식 복구 — 파일의 그 도식이 저장 당시 원본(o) 그대로일 때만 되돌려 놓는다.
+     에이전트가 도식을 고쳤으면 덮어쓰지 않고 알린다 */
+  try{const s=JSON.parse(localStorage.getItem(KEY)||'{}'),e=s&&s.v===2?s.e:{};let n=0,bad=0;
+    for(const k in e){
+      const cv=[cvs[k],...cvs].find(c=>c&&shot(c)===e[k].o);
+      if(cv&&shot(cv)===e[k].o){cv.innerHTML=e[k].v;n++}else bad++;
+    }
+    if(!(s&&s.v===2))bad+=Object.keys(s||{}).length;
+    if(n)DGV.refresh();
+    if(bad)setTimeout(()=>alert('저장하지 않은 도식 편집 '+bad+'개를 다시 붙이지 못했습니다.\n'
+      +'그 사이 파일의 도식이 바뀌어(에이전트 수정 등) 덮어쓰지 않았습니다.'),600);
+  }catch(e){}
+  function store(){
+    const e={};cvs.forEach((cv,i)=>{const h=shot(cv);if(h!==origin[i])e[i]={o:origin[i],v:h}});
+    try{
+      if(Object.keys(e).length)localStorage.setItem(KEY,JSON.stringify({v:2,e}));
+      else localStorage.removeItem(KEY);
+    }catch(_){}
+    document.dispatchEvent(new Event('deck:changed'));
+  }
+  store();
+  function record(cv,before){
+    undo.push({cv,html:before});if(undo.length>50)undo.shift();redo=[];store();
+  }
+  const touch=cv=>record(cv,shot(cv));               /* 바꾸기 직전에 부른다 */
+  function restore(cv,html){cv.innerHTML=html;sel=null;DGV.render(cv);store()}
+  function step(cv,back){
+    const a=back?undo:redo,b=back?redo:undo,u=a.pop();
+    if(!u){say(back?'되돌릴 것이 없다':'다시 할 것이 없다',1500);return}
+    b.push({cv:u.cv,html:shot(u.cv)});restore(u.cv,u.html);
+  }
+  function pick(x){
+    document.querySelectorAll('.dg-sel').forEach(e=>e.classList.remove('dg-sel'));
+    document.querySelectorAll('.dg-grip').forEach(e=>e.remove());
+    sel=x||null;
+    if(nodeOf(sel)){sel.classList.add('dg-sel');
+      const g=document.createElement('i');g.className='dg-grip';sel.appendChild(g)}
+    const cv=active();if(cv)DGV.render(cv);
+  }
+  function sync(){
+    const cv=active();
+    if(bar)bar.hidden=!cv;
+    document.body.classList.toggle('dg-on',!!cv);
+    if(!cv){pick(null);from=null}
+  }
+  document.addEventListener('deck:edit',sync);
+  document.addEventListener('deck:slide',sync);
+
+  /* 글자 — 더블클릭한 줄만 편집 */
+  function text(el,cv){
+    const before=shot(cv),was=el.textContent;
+    el.setAttribute('contenteditable',PT?'plaintext-only':'true');el.focus();
+    const r=document.createRange();r.selectNodeContents(el);r.collapse(false);
+    const s=getSelection();s.removeAllRanges();s.addRange(r);
+    const onIn=()=>DGV.render(cv);
+    el.addEventListener('input',onIn);
+    el.addEventListener('blur',()=>{
+      el.removeEventListener('input',onIn);el.removeAttribute('contenteditable');
+      if(el.textContent!==was)record(cv,before);DGV.render(cv);
+    },{once:true});
+  }
+  document.addEventListener('dblclick',e=>{
+    const cv=active();if(!cv||!cv.contains(e.target)||e.target.isContentEditable)return;
+    const hit=e.target.closest('.dg-hit,.dg-label');
+    if(hit){
+      const ed=edges(cv)[+hit.dataset.k],v=prompt('화살표 라벨 (비우면 지운다)',ed.dataset.label||'');
+      if(v===null)return;touch(cv);
+      if(v.trim())ed.dataset.label=v.trim();else delete ed.dataset.label;
+      DGV.render(cv);return;
+    }
+    const n=e.target.closest('.dg-node');if(!n)return;
+    let t=e.target;
+    if(t===n||t.classList.contains('dg-grip'))t=n.querySelector(':scope>b,:scope>span,:scope>p')||n;
+    else t=t.closest('.dg-node>*')||n;
+    text(t,cv);
+  });
+
+  /* 끌기 — 이동·크기. 캔버스 좌표로 바꿀 때 축소·확대 배율을 나눈다 */
+  document.addEventListener('pointerdown',e=>{
+    const cv=active();if(!cv||!cv.contains(e.target)||e.target.isContentEditable||e.button)return;
+    const hit=e.target.closest('.dg-hit,.dg-label'),n=e.target.closest('.dg-node'),
+          grip=e.target.closest('.dg-grip');
+    if(hit){pick(edges(cv)[+hit.dataset.k]);return}
+    if(!n){pick(null);return}
+    if(from){
+      if(n!==from){touch(cv);const ed=document.createElement('div');ed.className='dg-edge';
+        ed.dataset.from=from.id;ed.dataset.to=n.id;cv.appendChild(ed);say('이었다',1500)}
+      from=null;pick(n);return;
+    }
+    if(sel!==n)pick(n);
+    e.preventDefault();
+    const k=cv.getBoundingClientRect().width/DGV.size(cv).w||1,{w:W,h:H}=DGV.size(cv),
+          sx=e.clientX,sy=e.clientY,x0=n.offsetLeft,y0=n.offsetTop,w0=n.offsetWidth,h0=n.offsetHeight,
+          before=shot(cv);
+    let moved=false;
+    try{n.setPointerCapture(e.pointerId)}catch(_){}
+    const mv=ev=>{
+      const dx=(ev.clientX-sx)/k,dy=(ev.clientY-sy)/k;
+      if(!moved&&Math.hypot(dx,dy)<3)return;moved=true;
+      if(grip){n.style.width=Math.max(60,snap(w0+dx))+'px';n.style.height=Math.max(30,snap(h0+dy))+'px'}
+      else{n.style.left=Math.max(0,Math.min(W-w0,snap(x0+dx)))+'px';
+           n.style.top=Math.max(0,Math.min(H-h0,snap(y0+dy)))+'px'}
+      DGV.render(cv);
+    };
+    const up=()=>{n.removeEventListener('pointermove',mv);n.removeEventListener('pointerup',up);
+      n.removeEventListener('pointercancel',up);if(moved)record(cv,before)};
+    n.addEventListener('pointermove',mv);n.addEventListener('pointerup',up);n.addEventListener('pointercancel',up);
+  });
+
+  /* 도구 */
+  const uid=()=>'dg-'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+  function del(cv){
+    if(!sel)return;touch(cv);
+    if(nodeOf(sel))edges(cv).forEach(e=>{if(e.dataset.from===sel.id||e.dataset.to===sel.id)e.remove()});
+    sel.remove();pick(null);
+  }
+  function dup(cv){
+    if(!nodeOf(sel))return;touch(cv);
+    const c=sel.cloneNode(true);c.id=uid();c.classList.remove('dg-sel');
+    c.querySelectorAll('.dg-grip').forEach(e=>e.remove());
+    c.style.left=sel.offsetLeft+20+'px';c.style.top=sel.offsetTop+20+'px';
+    cv.appendChild(c);pick(c);
+  }
+  const act={
+    add(cv){touch(cv);const {w,h}=DGV.size(cv),n=document.createElement('div');
+      n.className='dg-node';n.id=uid();
+      n.style.cssText='left:'+snap(w/2-110)+'px;top:'+snap(h/2-50)+'px;width:220px;height:100px';
+      n.innerHTML='<b>새 박스</b><span>설명</span>';cv.appendChild(n);pick(n);say('더블클릭해서 글자를 고친다',2500)},
+    link(){if(!nodeOf(sel)){say('출발 박스를 먼저 고른다',2000);return}
+      from=sel;say('이을 박스를 누른다 (Esc 취소)',4000)},
+    dup,del,
+    tone(cv){if(!sel)return;touch(cv);
+      if(nodeOf(sel)){const t=['','ink','lime'],now=t.findIndex(c=>c&&sel.classList.contains(c));
+        sel.classList.remove('ink','lime');const nx=t[(Math.max(now,0)+1)%3];if(nx)sel.classList.add(nx)}
+      else{const d=sel.dataset.style==='dashed';
+        if(d){delete sel.dataset.style;delete sel.dataset.tone}else{sel.dataset.style='dashed';sel.dataset.tone='muted'}}
+      DGV.render(cv)},
+    bend(cv){if(!sel||nodeOf(sel)){say('화살표를 먼저 고른다',2000);return}touch(cv);
+      const c=parseFloat(sel.dataset.curve)||0,nx=c===0?.25:c>0?-.25:0;
+      if(nx)sel.dataset.curve=nx;else delete sel.dataset.curve;DGV.render(cv)}
+  };
+  if(bar)bar.addEventListener('click',e=>{
+    const b=e.target.closest('[data-dg]'),cv=active();if(!b||!cv)return;
+    b.blur();act[b.dataset.dg](cv);
+  });
+
+  /* 키 — 캡처 단계에서 먼저 받아, 도식에서 쓴 키는 덱(장 넘기기)으로 흘려보내지 않는다 */
+  addEventListener('keydown',e=>{
+    const cv=active();if(!cv||e.target.isContentEditable)return;
+    const mod=e.metaKey||e.ctrlKey,k=e.key;let used=true;
+    if(k==='Escape'){if(from){from=null;say('',0)}else pick(null)}
+    else if(mod&&e.code==='KeyZ')step(cv,!e.shiftKey);
+    else if(!sel)used=false;
+    else if(k==='Delete'||k==='Backspace')del(cv);
+    else if(mod&&e.code==='KeyD')dup(cv);
+    else if(/^Arrow/.test(k)&&nodeOf(sel)){
+      touch(cv);const d=e.shiftKey?G:1;
+      sel.style.left=sel.offsetLeft+(k==='ArrowLeft'?-d:k==='ArrowRight'?d:0)+'px';
+      sel.style.top=sel.offsetTop+(k==='ArrowUp'?-d:k==='ArrowDown'?d:0)+'px';
+      DGV.render(cv);
+    }
+    else used=false;
+    if(used){e.preventDefault();e.stopImmediatePropagation()}
+  },true);
+
+  window.DG={
+    selected:()=>sel,
+    dirty:()=>cvs.some((cv,i)=>shot(cv)!==origin[i]),
+    saved(){origin=cvs.map(shot);try{localStorage.removeItem(KEY)}catch(e){}},
+    reset(){cvs.forEach((cv,i)=>cv.innerHTML=origin[i]);undo=[];redo=[];sel=null;
+      try{localStorage.removeItem(KEY)}catch(e){}DGV.refresh()}
+  };
+  sync();
 })();
 </script>
 </body>
