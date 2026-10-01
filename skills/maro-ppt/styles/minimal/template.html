@@ -666,7 +666,54 @@ addEventListener('keydown',e=>{
   }
   const dirty=()=>nodes.some((el,i)=>el.innerHTML!==origin[i])||!!(window.DG&&DG.dirty());
   /* 저장 안 한 채 닫으면 묻는다 — 에이전트는 브라우저에만 있는 편집을 볼 수 없다 */
-  addEventListener('beforeunload',e=>{if(dirty()){e.preventDefault();e.returnValue=''}});
+  addEventListener('beforeunload',e=>{if(!leaving&&dirty()){e.preventDefault();e.returnValue=''}});
+
+  /* 저장 서버 모드 — tools/serve.py 로 열었으면(http://127.0.0.1) 고칠 때마다 원본에 바로 쓴다.
+     파일 고르기 창이 없다. 에이전트가 그 사이 파일을 고치면 새로고침해서 그 변경을 받고,
+     저장 안 한 편집은 원래 글자 기준으로 다시 붙여 저장한다 */
+  let SRV=false, base=0, busy=false, leaving=false, stimer=0;
+  const SP=decodeURIComponent(location.pathname);
+  const H={'X-Maro':'1'};
+  const idx=()=>[...document.querySelectorAll('.slide')].findIndex(s=>s.classList.contains('active'));
+  function reloadKeep(){
+    store(); leaving=true;
+    try{sessionStorage.setItem('maro-slide:'+SP,idx())}catch(_){}
+    location.reload();
+  }
+  async function srvSave(){
+    if(busy){clearTimeout(stimer);stimer=setTimeout(srvSave,300);return}
+    busy=true;
+    try{
+      const r=await fetch(location.pathname,{method:'PUT',headers:{...H,'X-Base-Mtime':String(base),'Content-Type':'text/html; charset=utf-8'},body:html()});
+      if(r.status===409){say('에이전트가 파일을 고쳐서 새로 불러온다 — 내 편집은 다시 붙는다',3000);reloadKeep();return}
+      if(!r.ok)throw new Error('HTTP '+r.status);
+      base=(await r.json()).mtime;
+      nodes.forEach((el,i)=>origin[i]=el.innerHTML);
+      try{localStorage.removeItem(KEY)}catch(_){}
+      if(window.DG)DG.saved();
+      say('저장됨',900);
+    }catch(err){say('저장 실패 — 저장 서버가 꺼졌을 수 있다 ('+err.message+')',6000)}
+    finally{busy=false}
+  }
+  (async()=>{
+    if(!/^https?:$/.test(location.protocol))return;
+    try{
+      const ok=await fetch('/__maro/ping',{headers:H,cache:'no-store'});if(!ok.ok)return;
+      const st=await fetch('/__maro/stat?p='+encodeURIComponent(location.pathname),{headers:H,cache:'no-store'});
+      base=(await st.json()).mtime;SRV=true;
+    }catch(_){return}
+    try{const n=sessionStorage.getItem('maro-slide:'+SP);
+      if(n!==null){sessionStorage.removeItem('maro-slide:'+SP);if(typeof show==='function')show(+n)}}catch(_){}
+    if(dirty())srvSave();                                   /* 새로고침 전에 저장 못 한 편집 */
+    setInterval(async()=>{                                  /* 에이전트가 고치면 바로 받아 온다 */
+      if(busy||leaving)return;
+      try{
+        const r=await fetch('/__maro/stat?p='+encodeURIComponent(location.pathname),{headers:H,cache:'no-store'});
+        const m=(await r.json()).mtime;
+        if(m!==base&&!busy&&!(document.activeElement&&document.activeElement.isContentEditable))reloadKeep();
+      }catch(_){}
+    },1500);
+  })();
   function mode(v){
     on=v; document.body.classList.toggle('editing',on);
     nodes.forEach(el=>on?el.setAttribute('contenteditable',PT?'plaintext-only':'true')
@@ -676,7 +723,8 @@ addEventListener('keydown',e=>{
     bSave.hidden=!on; bReset.hidden=!on;
     document.dispatchEvent(new CustomEvent('deck:edit',{detail:{on}}));
     if(!on){say('',0);return}
-    if(!FSA)say('이 브라우저는 덮어쓰기를 못 한다 — 저장은 내려받기로 떨어진다',6000);
+    if(SRV)say('고치는 즉시 원본에 저장된다',3000);
+    else if(!FSA)say('이 브라우저는 덮어쓰기를 못 한다 — 저장은 내려받기로 떨어진다',6000);
     else if(!handle&&!asked)say('저장할 때 파일을 한 번 묻는다. 이 파일을 골라 덮어쓰면 그 뒤로는 안 묻는다',7000);
   }
   function html(){
@@ -730,6 +778,7 @@ addEventListener('keydown',e=>{
     return handle;
   }
   async function save(silent){
+    if(SRV)return srvSave();
     const text=html();
     try{
       const first=!handle;
@@ -812,6 +861,7 @@ addEventListener('keydown',e=>{
   /* 고칠 때마다 브라우저에 적어 두고, 이 탭에서 한 번 저장한 뒤로는 1초 뒤 원본에도 바로 쓴다 */
   function changed(){
     store();
+    if(SRV){clearTimeout(stimer);stimer=setTimeout(srvSave,400);return}
     if(!auto||!handle)return;
     clearTimeout(timer);timer=setTimeout(()=>save(true),1000);
   }
