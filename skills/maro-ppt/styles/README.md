@@ -58,7 +58,7 @@ template: template.html
 □ 900px·600px 에서 1단으로 접힐 것
 ```
 
-`minimal/template.html` 의 `<script>` 네 덩이는 스타일과 무관하다. 그대로 가져다 쓴다.
+`minimal/template.html` 의 `<script>` 여섯 덩이는 스타일과 무관하다. 그대로 가져다 쓴다.
 
 | 스크립트 | `data-editor` | 편집 기능 삭제 뒤 |
 |---|---|---|
@@ -66,9 +66,12 @@ template: template.html
 | 도식 보기 (`DGV`) | 없음 | 남는다 |
 | 글자 편집·저장·편집 기능 삭제 | 있음 | 빠진다 |
 | 도식 편집 (`DG`) | 있음 | 빠진다 |
+| 모션 정의 (`window.MOTIONS`) · 모션 재생 (`MO`) — **맨 끝** | 없음 | 남는다 |
 
 편집용 CSS 도 `<style data-editor>` 로 따로 두고, 푸터 `.tools` 에도 `data-editor` 를 붙인다.
 도식 모양(`.dg-node` 색·테두리)은 스타일마다 다시 쓰되 클래스 이름(`.dg` `.dg-node` `.dg-edge` `.ink` `.lime` `.zone` `.ghost`)은 유지한다.
+
+템플릿의 `<section>` 들은 **견본**이다. 주석에 `견본 · {이름}` 만 달고 번호를 붙이지 않는다 — 덱의 순서는 확장이 정한다.
 
 **4. 이 README 의 "등록된 스타일" 표에 한 줄 추가한다.**
 

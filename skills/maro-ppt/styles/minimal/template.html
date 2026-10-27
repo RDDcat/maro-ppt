@@ -45,7 +45,8 @@ footer{gap:18px}
 .nav button:disabled{opacity:.25}
 
 /* 4. 슬라이드 -------------------------------------------- */
-.slide{display:none;margin:auto;align-items:center;gap:5vw;
+.slide{display:none;margin:auto;align-items:center;column-gap:5vw;
+  row-gap:clamp(20px,3.2vh,32px);   /* 세로 간격은 좁게 — 넓으면 제목만 위로 떠서 시선이 위로 간다 */
   width:min(1280px,calc(100% / var(--zoom,1)))}   /* 배율만큼 좁게 잡아 키우면 폭은 그대로 찬다 */
 .slide.active{display:grid;animation:enter .3s ease-out;
   transform:scale(var(--zoom,1));transform-origin:center center}
@@ -145,6 +146,11 @@ footer{gap:18px}
 .frame img{display:block;width:100%;height:280px;object-fit:cover;object-position:top left}
 .frame figcaption{padding:11px 14px;color:#e2e7e3;font-size:13px;font-weight:800}
 .fade{opacity:.52;filter:grayscale(.45) saturate(.55)}   /* before 는 죽인다 */
+
+/* 도표 — 공식 문서 도표·다이어그램 이미지. 자르지 않고 전체를, 가운데에 */
+.figure{width:fit-content;max-width:100%;margin:0 auto;background:#fff;border:1px solid var(--line)}
+.figure img{display:block;width:auto;height:auto;max-width:100%;max-height:52vh;margin:0 auto}
+.figure figcaption{padding:9px 14px;background:var(--ink);color:#e2e7e3;font-size:13px;font-weight:800}
 
 /* 벤다이어그램 — 원은 SVG, 글자는 그 위에 얹은 HTML(편집 가능) */
 .venn{position:relative;max-width:660px;margin:0 auto}
@@ -246,7 +252,7 @@ footer{gap:18px}
   <div class="count"><span id="current">01</span> / <span id="total">09</span></div>
 </header>
 
-<!-- 01 표지 ------------------------------------------------ -->
+<!-- 견본 · 표지 ------------------------------------------------ -->
 <section class="slide active title">
   <div class="copy">
     <h1>{강의 이름} <span class="accent">{핵심 명사}</span></h1>
@@ -254,7 +260,7 @@ footer{gap:18px}
   </div>
 </section>
 
-<!-- 02 상황 ------------------------------------------------ -->
+<!-- 견본 · 상황 ------------------------------------------------ -->
 <section class="slide two dense">
   <div class="copy">
     <h1>지금 겪는 <span class="accent">{불편의 이름}</span></h1>
@@ -274,7 +280,7 @@ footer{gap:18px}
   </div>
 </section>
 
-<!-- 03 대조 (A/B) ------------------------------------------ -->
+<!-- 견본 · 대조 (A/B) ------------------------------------------ -->
 <section class="slide two dense">
   <div class="copy">
     <h1>{A}와 {B}의 <span class="accent">차이</span></h1>
@@ -297,7 +303,7 @@ footer{gap:18px}
   </div>
 </section>
 
-<!-- 04 확대 ------------------------------------------------ -->
+<!-- 견본 · 확대 ------------------------------------------------ -->
 <section class="slide one">
   <div class="copy">
     <h2>{규모}에 따른 <span class="accent">{비용 변화}</span></h2>
@@ -311,7 +317,7 @@ footer{gap:18px}
   </div>
 </section>
 
-<!-- 05 해부 (구성요소 3개) --------------------------------- -->
+<!-- 견본 · 해부 (구성요소 3개) --------------------------------- -->
 <section class="slide one">
   <div class="copy">
     <h2>{대상}의 <span class="accent">세 가지 구성요소</span></h2>
@@ -339,7 +345,7 @@ footer{gap:18px}
   </div>
 </section>
 
-<!-- 06 절차 ------------------------------------------------ -->
+<!-- 견본 · 절차 ------------------------------------------------ -->
 <section class="slide two dense">
   <div class="copy">
     <h1>{작업}의 <span class="accent">절차</span></h1>
@@ -355,7 +361,7 @@ footer{gap:18px}
   </div>
 </section>
 
-<!-- 07 실행 (프롬프트) ------------------------------------- -->
+<!-- 견본 · 실행 (프롬프트) ------------------------------------- -->
 <section class="slide two dense">
   <div class="copy">
     <h1>실제 <span class="accent">동작 예시</span></h1>
@@ -376,7 +382,7 @@ footer{gap:18px}
   </div>
 </section>
 
-<!-- 08 결과 (숫자) ----------------------------------------- -->
+<!-- 견본 · 결과 (숫자) ----------------------------------------- -->
 <section class="slide one">
   <div class="copy"><h2>적용 뒤 <span class="accent">{바뀐 수치}</span></h2></div>
   <div style="display:grid;grid-template-columns:.7fr 1.3fr;gap:18px;align-items:stretch">
@@ -393,7 +399,16 @@ footer{gap:18px}
   </div>
 </section>
 
-<!-- 09 관계 (벤다이어그램) --------------------------------- -->
+<!-- 견본 · 도표 (공식 문서 그림 한 장) -------------------------- -->
+<section class="slide one">
+  <div class="copy">
+    <h2>{출처의} <span class="accent">{도표 이름}</span></h2>
+    <p class="body">{이 그림에서 볼 것 한 문장}</p>
+  </div>
+  <figure class="figure"><img src="{data:image/svg+xml;base64,...}" alt="{그림 설명}"><figcaption>출처: {문서 이름}</figcaption></figure>
+</section>
+
+<!-- 견본 · 관계 (벤다이어그램) --------------------------------- -->
 <section class="slide one">
   <div class="copy">
     <h2>{A}와 {B}의 <span class="accent">관계</span></h2>
@@ -417,7 +432,7 @@ footer{gap:18px}
   </div>
 </section>
 
-<!-- 10 구조 (도식 — [편집] 켜면 박스·화살표를 고친다) ---- -->
+<!-- 견본 · 구조 (도식 — [편집] 켜면 박스·화살표를 고친다) ---- -->
 <section class="slide one">
   <div class="copy">
     <h2>{대상}의 <span class="accent">연결 구조</span></h2>
@@ -438,7 +453,7 @@ footer{gap:18px}
   </div>
 </section>
 
-<!-- 11 마무리 ---------------------------------------------- -->
+<!-- 견본 · 마무리 ---------------------------------------------- -->
 <section class="slide two dense">
   <div class="copy">
     <h1>오늘의 <span class="accent">정리</span></h1>
@@ -728,7 +743,7 @@ addEventListener('keydown',e=>{
     else if(!handle&&!asked)say('저장할 때 파일을 한 번 묻는다. 이 파일을 골라 덮어쓰면 그 뒤로는 안 묻는다',7000);
   }
   function html(){
-    const c=document.documentElement.cloneNode(true);
+    const c=(window.MO?MO.bare:f=>f())(()=>document.documentElement.cloneNode(true));   /* 모션이 바꾼 모양·만든 노드는 저장하지 않는다 */
     c.querySelectorAll('[contenteditable]').forEach(e=>e.removeAttribute('contenteditable'));
     c.querySelectorAll('[data-edit]').forEach(e=>e.removeAttribute('data-edit'));
     c.querySelectorAll('.slide').forEach((e,i)=>e.classList.toggle('active',i===0));
@@ -1075,6 +1090,100 @@ addEventListener('keydown',e=>{
       try{localStorage.removeItem(KEY)}catch(e){}DGV.refresh()}
   };
   sync();
+})();
+</script>
+
+<script>
+/* 모션 정의 — motions/{이름}/motion.md 의 JS 덩이를 이 안에 붙인다. 모션을 안 쓰면 비워 둔다 */
+window.MOTIONS={};
+</script>
+
+<script>
+/* 모션 재생 — .mo[data-motion] 을 시간 t(초)의 함수로 그린다. 편집 기능을 삭제해도 남는다.
+   장에 들어오면 0초부터 한 번 재생하고 끝 장면(= 원래 마크업)에서 멈춘다 · R(한글 ㄱ)이나 그래픽 클릭으로 다시 재생
+   정의에 loop 가 있으면 끝 장면 뒤에 조용한 반복이 이어진다(그 장에 있는 동안만) · data-loop="off" 로 끈다
+   '동작 줄이기'가 켜져 있으면 끝 장면만 보인다 · 편집 중에는 모션을 걷어 내 원래 마크업만 남긴다
+   MO.seek(t) 는 지금 장을 t초 장면으로 세운다 — 영상으로 뽑을 때(Playwright) 쓰는 자리 */
+(function(){
+  const base=new Map();                              /* 모션이 건드린 원래 노드 → 원래 style 속성 */
+  const RM=matchMedia('(prefers-reduced-motion: reduce)');
+  let live=[],t0=0,raf=0,last=0,still=false,editing=false;
+  const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x)),
+        lerp=(a,b,p)=>a+(b-a)*p,
+        ease={lin:x=>x,out:x=>1-Math.pow(1-x,3),inOut:x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2},
+        seg=(t,a,b,e=ease.out)=>e(clamp((t-a)/((b-a)||1e-6)));   /* t 가 a초→b초를 지나는 동안 0→1 */
+  /* 원래 노드의 모양은 이것으로만 바꾼다 — 저장·편집 때 원래 style 로 되돌리기 위해서다. 속성 이름은 kebab-case */
+  function css(n,o){
+    if(!base.has(n))base.set(n,n.getAttribute('style'));
+    for(const k in o)n.style.setProperty(k,o[k]);
+  }
+  /* 모션이 새로 만든 노드에는 이 표시를 붙인다 — 저장에서 빠지고, 편집 글자로 잡히지 않는다 */
+  function gen(n){
+    [n,...n.querySelectorAll('*')].forEach(e=>{
+      e.removeAttribute('data-edit');e.removeAttribute('contenteditable');e.removeAttribute('id');
+      e.removeAttribute('data-motion');e.classList.remove('mo')});        /* 사본이 또 하나의 모션으로 잡히지 않게 */
+    n.setAttribute('data-mo-gen','');n.setAttribute('aria-hidden','true');
+    n.style.pointerEvents='none';
+    return n;
+  }
+  const M={css,gen,seg,lerp,clamp,ease};
+  const q=()=>[...document.querySelectorAll('.slide.active .mo[data-motion]')];
+  function prep(el){
+    if(el._mo)return el._mo;
+    const d=MOTIONS[el.dataset.motion];
+    if(!d){console.warn('모션 정의가 없다:',el.dataset.motion);return el._mo={none:1}}
+    el._mo={d};
+    if(d.init)d.init(el,M);
+    el._mo.dur=+el.dataset.dur||(typeof d.dur==='function'?d.dur(el):d.dur)||2;
+    return el._mo;
+  }
+  const loops=el=>{const m=prep(el);return !m.none&&!!m.d.loop&&el.dataset.loop!=='off'};
+  /* t 초 장면. 반복이 있는 모션은 끝 장면 뒤로 loop(el, u) 가 이어진다 — u 는 끝 장면부터 흐른 초 */
+  function draw(t,noLoop){
+    last=t;still=!!noLoop;
+    live.forEach(el=>{const m=prep(el);if(m.none)return;
+      m.d.draw(el,Math.min(t,m.dur),M,m.dur);
+      if(!noLoop&&t>m.dur&&loops(el))m.d.loop(el,t-m.dur,M)});
+  }
+  const end=()=>live.some(loops)?Infinity:Math.max(0,...live.map(el=>prep(el).dur||0));
+  function stop(){cancelAnimationFrame(raf);raf=0}
+  function tick(now){const t=(now-t0)/1000;draw(t);raf=t<end()?requestAnimationFrame(tick):0}
+  function play(){
+    stop();
+    live=editing?[]:q();
+    if(!live.length)return;
+    if(RM.matches)return draw(1e6,true);                 /* 동작 줄이기 — 끝 장면, 반복 없음 */
+    draw(0);t0=performance.now();raf=requestAnimationFrame(tick);
+  }
+  function seek(t){stop();live=editing?[]:q();draw(t)}
+  /* 걷어 내기 — 만든 노드를 지우고 건드린 style 을 원래대로. 다음 재생 때 init 부터 다시 한다 */
+  function lift(){
+    stop();live=[];
+    document.querySelectorAll('[data-mo-gen]').forEach(n=>n.remove());
+    base.forEach((v,n)=>v==null?n.removeAttribute('style'):n.setAttribute('style',v));
+    base.clear();
+    document.querySelectorAll('.mo').forEach(el=>{delete el._mo});
+  }
+  /* 저장용 — 모션이 없는 원래 마크업에서 fn() 을 부르고, 보던 장면으로 돌아온다 (한 틱 안이라 깜빡이지 않는다) */
+  function bare(fn){
+    const was=last,running=!!raf;
+    lift();
+    try{return fn()}
+    finally{if(!editing){const st=still;live=q();draw(was,st);if(running)raf=requestAnimationFrame(tick)}}
+  }
+  document.addEventListener('deck:slide',play);
+  document.addEventListener('deck:edit',e=>{editing=e.detail.on;if(editing)lift();else{stop();live=q();draw(1e6,true)}});
+  addEventListener('keydown',e=>{
+    if(editing||e.target.isContentEditable||e.metaKey||e.ctrlKey||e.altKey)return;
+    if(e.code==='KeyR'||e.key==='r'||e.key==='R'||e.key==='ㄱ')play();
+  });
+  addEventListener('click',e=>{
+    if(!editing&&e.target.closest&&e.target.closest('.slide.active .mo')&&!e.target.closest('a'))play();
+  });
+  addEventListener('resize',()=>{if(!raf&&live.length)draw(last,still)});   /* 멈춰 있던 장면 그대로 다시 그린다 */
+  if(RM.addEventListener)RM.addEventListener('change',play);
+  window.MO={...M,play,seek,lift,bare};
+  play();
 })();
 </script>
 </body>

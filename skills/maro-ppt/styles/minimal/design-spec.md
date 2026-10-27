@@ -131,7 +131,8 @@ line-break: strict;
 ```css
 .deck{height:100%;min-height:640px;padding:26px 4.5vw 20px;
       display:grid;grid-template-rows:auto 1fr auto;background:var(--paper)}
-.slide{display:none;width:min(1280px,100%);margin:auto;align-items:center;gap:5vw}
+.slide{display:none;width:min(1280px,100%);margin:auto;align-items:center;
+       column-gap:5vw;row-gap:clamp(20px,3.2vh,32px)}   /* 세로 간격은 좁게 */
 .slide.active{display:grid;animation:enter .3s ease-out}
 .one{grid-template-columns:1fr}          /* 도해가 가로로 넓을 때 */
 .two{grid-template-columns:.9fr 1.1fr}   /* 기본: 왼쪽 말, 오른쪽 그림 */
@@ -140,7 +141,11 @@ line-break: strict;
 - 캔버스를 1280×720으로 고정하지 않습니다. **뷰포트를 꽉 채우고** 안쪽 폭만 1280으로 제한합니다.
 - `.two`가 기본. 왼쪽은 항상 `제목 + 리드 한 문장`, 오른쪽은 그 문장의 **증거 도해**.
 - `.one`은 3~5칸짜리 가로 흐름을 놓을 때만.
-- 전환 애니메이션은 하나뿐: `opacity 0→1, translateY(8px)→0`, `.3s ease-out`.
+- 가로 간격(`column-gap:5vw`)과 세로 간격(`row-gap`)을 따로 잡습니다. `gap:5vw` 하나로 두면 `.one`에서
+  제목과 도해 사이가 70px 넘게 벌어져 제목만 위로 뜹니다.
+- `.one`에서 슬라이드 폭보다 좁은 도해(벤·도표·이미지)는 `margin:0 auto`로 가운데에 놓습니다.
+- 장 전환 애니메이션은 하나뿐: `opacity 0→1, translateY(8px)→0`, `.3s ease-out`.
+- 장 **안의** 움직이는 그래픽은 전환과 별개입니다 — `motions/README.md` 의 원칙을 따릅니다.
 
 ### 헤더·푸터
 
@@ -247,6 +252,19 @@ line-break: strict;
 - `object-position:top left` — 스크린샷은 왼쪽 위를 기준으로 자릅니다.
 - **"before" 이미지는 죽입니다**: `opacity:.52; filter:grayscale(.45) saturate(.55)`.
   두 이미지를 나란히 놓고 한쪽을 흐리게 하는 것으로 "이쪽을 보라"를 말합니다.
+
+### ⑦-2 도표 프레임
+
+공식 문서의 도표·다이어그램처럼 **잘리면 안 되는 그림**은 스크린샷 프레임을 쓰지 않습니다.
+
+```css
+.figure{width:fit-content;max-width:100%;margin:0 auto;background:#fff;border:1px solid var(--line)}
+.figure img{display:block;width:auto;height:auto;max-width:100%;max-height:52vh;margin:0 auto}
+.figure figcaption{padding:9px 14px;background:var(--ink);color:#e2e7e3;font-size:13px;font-weight:800}
+```
+
+- 프레임이 그림 폭에 딱 맞고(`fit-content`) 가운데에 놓입니다. 흰 판이 남아 그림이 한쪽에 쏠리지 않습니다.
+- 캡션은 출처 한 줄(`출처: {문서 이름}`)입니다. 그림자는 없습니다.
 
 ---
 
@@ -378,9 +396,10 @@ p.body  1문장 (18px, muted)          ← 제목을 풀어 주는 한 줄. 두 
 - 마침표를 찍지 않습니다. 물음표도 쓰지 않습니다.
 - 마케팅 문구·감탄사·이모지를 쓰지 않습니다.
 
-### 6-3. 15장 서사 골격
+### 6-3. 장 유형 목록 (원본 덱에서 뽑은 것)
 
-원본 덱의 순서입니다. 주제가 달라도 이 뼈대는 재사용됩니다.
+원본 덱 한 편에 나온 장 유형입니다. **번호는 그 덱의 순서일 뿐, 새 덱의 순서가 아닙니다.**
+새 덱은 고정 뼈대 없이 SKILL.md 2절 확장이 순서를 정합니다. 여기서는 *어떤 유형의 장이 있을 수 있는지*만 봅니다.
 
 | # | 유형 | 하는 일 |
 |---|---|---|
@@ -400,7 +419,7 @@ p.body  1문장 (18px, muted)          ← 제목을 풀어 주는 한 줄. 두 
 | 14 | 시작점 | 따라 할 경로 2개 + 예시 프롬프트 |
 | 15 | 마무리 | 할 수 있는 것 / 별도로 고민할 것 2카드 |
 
-- 프롬프트 블록은 **10번과 14번**에만. 남발하면 무게가 사라집니다.
+- 프롬프트 블록은 **덱 전체에서 2개 이하**. 어느 장에 오는지는 정하지 않습니다. 남발하면 무게가 사라집니다.
 - 외부 출처는 `↗`를 붙인 텍스트 링크로 표기합니다: `공식 GitHub ↗`.
 
 ---

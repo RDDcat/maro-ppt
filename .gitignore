@@ -1,3 +1,6 @@
 .DS_Store
 *.swp
 node_modules/
+
+# 모션 검수 자료 (로컬 전용, 커밋하지 않음)
+motion-review/
